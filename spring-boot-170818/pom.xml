@@ -1,0 +1,100 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>spring-boot-test</groupId>
+  <artifactId>com.swf</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>springBootTest170818</name>
+  <description>springboot学习</description>
+  
+  <!-- 在pom.xml中引入spring-boot-start-parent,spring官方的解释叫什么stater 
+  poms,它可以提供dependency management,也就是说依赖管理，引入以后在申明其它dependency的时候就不需要version了，后面可以看到。 -->
+  <parent>
+     <groupId>org.springframework.boot</groupId>  
+     <artifactId>spring-boot-starter-parent</artifactId>  
+     <version>1.5.6.RELEASE</version>  
+  </parent>  
+  <!-- 指定当前工程使用的jdk版本 -->
+  <properties>
+     <java.version>1.8</java.version>
+  </properties>
+  
+  <dependencies>
+  	<!-- 因为我们开发的是web工程，所以需要在pom.xml中引入spring-boot-starter-web,spring官方解释说spring-boot-start-web包含了spring webmvc和tomcat等web开发的特性 -->
+     <dependency>  
+        <groupId>org.springframework.boot</groupId>  
+        <artifactId>spring-boot-starter-web</artifactId>  
+     </dependency>
+     
+     <!--  使用lombok简化实体代码操作   针对不同的IDE，lombok提供了不同的解决方案，笔者使用的是STS，故这介绍一下如何使用lombok插件在STS中：
+  				>> 1.  下载最新的lombok，最新版本。1.16.10  https://projectlombok.org/download.html
+  				>> 2.  切到lombok下载的目录，运行命令： Java -jar lombok.jar  如果是idea的话直接在File > Settings > Plugins > Browse repositories搜索lombok plugin插件安装即可-->
+     <dependency>
+		<groupId>org.projectlombok</groupId>
+		<artifactId>lombok</artifactId>
+		<!-- <version>1.16.10</version> -->
+	 </dependency>
+	 
+	 <!--springloaded  hot deploy --> 
+     <dependency> 
+         <groupId>org.springframework</groupId> 
+         <artifactId>springloaded</artifactId> 
+         <!-- <version>1.2.4.RELEASE</version> -->
+     </dependency>
+	 
+	 <!-- spring boot 测试类 -->
+	 <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-test</artifactId>
+        <scope>test</scope>
+     </dependency>
+     <!-- fastjson解析json数据 -->
+     <dependency>
+     	<groupId>com.alibaba</groupId>
+        <artifactId>fastjson</artifactId>
+        <version>1.2.15</version>
+     </dependency>
+     <!-- 连接数据库 -->
+     <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+	 </dependency>
+	 
+	 <dependency>
+        <groupId>com.alibaba</groupId>
+        <artifactId>druid</artifactId>
+        <version>1.0.18</version>
+	 </dependency>
+	 
+	 <!-- hibernate -->
+	 <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-data-jpa</artifactId>
+	 </dependency>
+  </dependencies>
+  
+  <build> 
+  <!-- 如果我们要直接Main启动spring，那么以下plugin必须要添加，否则是无法启动的。如果使用maven 的spring-boot:run的话是不需要此配置的。（我在测试的时候，如果不配置下面的plugin也是直接在Main中运行的。） --> 
+      <!-- <plugins>  
+            <plugin>  
+                <groupId>org.springframework.boot</groupId>  
+               <artifactId>spring-boot-maven-plugin </artifactId>  
+               <configuration>
+			      <source>1.8</source>
+			      <target>1.8</target>
+			   </configuration>
+          </plugin>  
+       </plugins>  --> 
+       
+       
+</build> 
+<!-- <executions> 预计为spring boot热部署
+                       <execution> 
+                           <goals> 
+                               <goal>repackage</goal> 
+                           </goals> 
+                           <configuration> 
+                               <classifier>exec</classifier> 
+                           </configuration> 
+                       </execution> 
+                     </executions> -->
+</project>
