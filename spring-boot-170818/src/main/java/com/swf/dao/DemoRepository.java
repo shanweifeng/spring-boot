@@ -1,4 +1,4 @@
-package com.swf.web.dao;
+package com.swf.dao;
 
 import org.springframework.data.repository.CrudRepository;
 

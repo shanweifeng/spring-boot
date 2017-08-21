@@ -62,7 +62,7 @@
 	 <dependency>
         <groupId>com.alibaba</groupId>
         <artifactId>druid</artifactId>
-        <version>1.0.18</version>
+        <version>1.0.27</version><!-- 1.0.29 -->
 	 </dependency>
 	 
 	 <!-- hibernate -->
@@ -74,7 +74,7 @@
   
   <build> 
   <!-- 如果我们要直接Main启动spring，那么以下plugin必须要添加，否则是无法启动的。如果使用maven 的spring-boot:run的话是不需要此配置的。（我在测试的时候，如果不配置下面的plugin也是直接在Main中运行的。） --> 
-      <!-- <plugins>  
+      <plugins>  
             <plugin>  
                 <groupId>org.springframework.boot</groupId>  
                <artifactId>spring-boot-maven-plugin </artifactId>  
@@ -83,7 +83,7 @@
 			      <target>1.8</target>
 			   </configuration>
           </plugin>  
-       </plugins>  --> 
+       </plugins>
        
        
 </build> 

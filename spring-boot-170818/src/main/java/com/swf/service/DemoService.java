@@ -1,4 +1,4 @@
-package com.swf.web.service;
+package com.swf.service;
 
 import javax.annotation.Resource;
 import javax.transaction.Transactional;
@@ -9,7 +9,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
 import com.swf.entity.Demo;
-import com.swf.web.dao.DemoRepository;
+import com.swf.dao.DemoRepository;
 
 @Service
 public class DemoService {

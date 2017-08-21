@@ -1,13 +1,16 @@
-package com.swf.web.comtroller;
+package com.swf.web.controller;
 
 import javax.annotation.Resource;
+import javax.sql.DataSource;
 
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.alibaba.druid.support.http.StatViewServlet;
 import com.swf.entity.Demo;
-import com.swf.web.service.DemoService;
+import com.swf.service.DemoService;
+import com.swf.web.utils.SpringUtil;
 
 @RestController// 标记为：restful
 public class HelloController {
@@ -65,5 +68,15 @@ public class HelloController {
     @RequestMapping("/getById/{id}")
     public Object getById(@PathVariable("id") int id){
        return demoService.getById(id);//保存数据.
+    }
+    
+    @Resource
+    private DataSource dataSource;
+    @RequestMapping("/getBeans")
+    public Object getBeans() {
+    	//StatViewServlet t=SpringUtil.getBean(StatViewServlet.class);
+    	//System.out.println(t.get);
+    	System.out.println("dataSource:"+dataSource);
+    	return "getBeans";
     }
 }
