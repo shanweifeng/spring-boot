@@ -4,9 +4,13 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
-
+/**
+ * 参考：http://412887952-qq-com.iteye.com/blog/1479445 
+ * @author Administrator
+ *
+ */
 @Component
-public class SpringUtil implements ApplicationContextAware{
+public class SpringUtil implements ApplicationContextAware{//如果当前获取bean的类不在springboot的扫描包路径下，则需要手动将当前类在启动类中注册到spring容器中@Bean  或者@Import(value={SpringUtil.class})直接将其注入SpringUtil不需要@Component注解
 	private static ApplicationContext applicationContext;
 
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {

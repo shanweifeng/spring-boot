@@ -80,8 +80,8 @@ public class DruidConfiguration {
     private int maxPoolPreparedStatementPerConnectionSize;  
   
     @Bean  
-    @Primary  
-    public DataSource dataSource() {  
+    @Primary//如果同时进行了编程式的注入和配置的注入，配置的就无效了。
+    public DataSource dataSource() {//可以将driverClassName属性配置到方法参数中如@Value("${spring.datasource.url}") String url
         DruidDataSource datasource = new DruidDataSource();  
   
         datasource.setDriverClassName(driverClassName);  

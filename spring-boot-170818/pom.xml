@@ -70,8 +70,20 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-data-jpa</artifactId>
 	 </dependency>
+	 
+	 <!-- thymeleaf模板引擎 -->
+	 <dependency>
+         <groupId>org.springframework.boot</groupId>
+         <artifactId>spring-boot-starter-thymeleaf</artifactId>
+	 </dependency>
+	 
+	 <!-- freemarker模板 -->
+	 <dependency>
+         <groupId>org.springframework.boot</groupId>
+         <artifactId>spring-boot-starter-freemarker</artifactId>
+	 </dependency>
   </dependencies>
-  
+  <!-- thymeleaf和freemarker是可以共存的 -->
   <build> 
   <!-- 如果我们要直接Main启动spring，那么以下plugin必须要添加，否则是无法启动的。如果使用maven 的spring-boot:run的话是不需要此配置的。（我在测试的时候，如果不配置下面的plugin也是直接在Main中运行的。） --> 
       <plugins>  
