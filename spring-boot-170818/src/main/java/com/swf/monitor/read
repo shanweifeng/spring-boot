@@ -1,0 +1,22 @@
+http://www.cnblogs.com/winner-0715/p/6733221.html
+spring boot中配置servlet、filter、Listener、和HandlerInterceptor
+1、servlet配置方式
+	DruidStatViewServlet.java为第一种配置方式需要在启动类上面添加@ServletComponentScan注解 方便启动时扫描到配置类
+		@WebServlet(urlPatterns="/myServlet/*", description="Servlet的说明")使用当前注解
+	DruidConfiguration.java为第二种servlet配置方式不需要再启动类上面配置@ServletComponentScan注解
+		StatViewServlet为继承HttpServlet 的类重写了doPost、doGet方法
+		通过 ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean(new StatViewServlet(),"/druid/*");将servlet注册到spring中配置相关属性
+2、filter配置方式
+	DruidStatFilter。java为第一种配置方式需要在启动类上面添加@ServletComponentScan注解 方便启动时扫描到配置类
+		@WebFilter(filterName = "myFilter", urlPatterns = "/*")添加，实现Filter
+	DruidConfiguration.java为第二种servlet配置方式不需要再启动类上面配置@ServletComponentScan注解
+		WebStatFilter为实现Filter接口的类，实现了init、doFilter、destroy方法
+		通过FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean(new WebStatFilter());注册到spring中配置相关属性
+3、Listener配置方式
+	在类上面标注@WebListener注解，实现ServletContextListener、HttpSessionListener接口并在启动类上面添加@ServletComponentScan注解 方便启动时扫描到配置类
+4、HandlerInterceptor配置方式
+	通过实现HandlerInterceptor 接口创建拦截器
+	通过实现WebMvcConfigurerAdapter类重写addInterceptors方法，将多个拦截器组成一个拦截器，配置拦截规则以及排除拦截 
+	http://www.cnblogs.com/shanwf/p/7404354.html
+	
+	WebMvcConfigurerAdapter中配置手动配置静态资源映射
