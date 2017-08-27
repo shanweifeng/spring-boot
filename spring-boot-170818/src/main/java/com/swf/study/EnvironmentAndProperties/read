@@ -1,0 +1,7 @@
+获取系统环境属性值
+1、通过controller、service等spring管理的类实现EnvironmentAware接口获取系统变量
+2、属性对象的绑定
+	a、通过在类属性上面添加@Value（“”）注解将配置文件中的数据绑定到对应属性上
+	b、通过将@EnableConfigurationProperties(MongoProperties.class)注解到类上面，MongoProperties对象为类的一个属性，在MongoProperties上面配置@ConfigurationProperties(prefix = "spring.data.mongodb")
+	  标记将以spring.data.mongodb开头的属性注入到MongoProperties类属性中
+	c、

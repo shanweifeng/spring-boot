@@ -1,8 +1,10 @@
 package com.swf.monitor;
 
 import java.sql.SQLException;
+import java.util.EventListener;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.annotation.WebServlet;
 import javax.sql.DataSource;
 
 import org.slf4j.Logger;
@@ -10,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.ServletComponentScan;
+import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +22,7 @@ import org.springframework.context.annotation.Primary;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.support.http.StatViewServlet;
 import com.alibaba.druid.support.http.WebStatFilter;
+import com.swf.monitor.listener.globalListener;
 
 import lombok.Data;
 
@@ -150,5 +155,13 @@ public class DruidConfiguration {
        //添加不需要忽略的格式信息.
        filterRegistrationBean.addInitParameter("exclusions","*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*");
        return filterRegistrationBean;
+    }
+    
+    //@Bean 通过代码注册的servlet、filter、listener不需要再对应的实现类上面添加注解  只有通过@ServletComponentScan扫描的东西才需要在实现类上面添加对应的注解@WebServlet @WebFilter @WebListener
+    public ServletListenerRegistrationBean<EventListener> listener(){// 代码注册listener
+    	ServletListenerRegistrationBean<EventListener> sl = new ServletListenerRegistrationBean<EventListener>();
+    	sl.setListener(new globalListener());
+    	//registrationBean.setOrder(1);  标注执行顺序
+    	return sl;
     }
 }

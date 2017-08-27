@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.alibaba.druid.support.http.StatViewServlet;
 import com.swf.entity.Demo;
 import com.swf.service.DemoService;
+import com.swf.study.EnvironmentAndProperties.PropertiesForValue;
 import com.swf.web.utils.SpringUtil;
 
 @RestController// 标记为：restful
@@ -17,6 +18,10 @@ public class HelloController {
 
 	@Resource
 	private DemoService demoService;
+	
+	//@Resource
+	//private PropertiesForValue properties;
+	
 	@RequestMapping("/")
     public String hello(){
        return"Hello world! 这里将数据访问单独提出放到了controller中";
@@ -79,4 +84,9 @@ public class HelloController {
     	System.out.println("dataSource:"+dataSource);
     	return "getBeans";
     }
+    
+    /*@RequestMapping("/getPropertiesForValue")
+    public String getPropertiesForValue() {
+    	return "返回的Url:"+properties.getUrl();
+    }*/
 }

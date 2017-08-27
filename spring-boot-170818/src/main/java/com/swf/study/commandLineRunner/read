@@ -1,0 +1,12 @@
+CommandLineRunner 接口
+在项目启完的时候就加载一些数据或做一些事情
+
+题外话：
+eclipse中给java应用传args参数的方法如下：
+1、先写好Java代码，比如文件名为IntArrqy.java；
+2、在工具栏或菜单上点run as下边有个Run Configuration；
+3、在弹出窗口点选第二个标签arguments；
+4、把你想输入的参数写在program argumenst就可以了，多个参数使用空格隔开。
+完成后点run即可通过运行结果看到参数使用情况了。
+
+后续还会有ApplicationRunnner接口与当前接口进行比较
