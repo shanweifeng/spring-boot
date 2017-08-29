@@ -17,10 +17,10 @@
   <properties>
      <java.version>1.8</java.version>
   </properties>
-  
+  <dependencyManagement></dependencyManagement><!-- 导入 -->
   <dependencies>
   	<!-- 因为我们开发的是web工程，所以需要在pom.xml中引入spring-boot-starter-web,spring官方解释说spring-boot-start-web包含了spring webmvc和tomcat等web开发的特性 -->
-     <dependency>  
+     <dependency>
         <groupId>org.springframework.boot</groupId>  
         <artifactId>spring-boot-starter-web</artifactId>  
      </dependency>
@@ -82,8 +82,15 @@
          <groupId>org.springframework.boot</groupId>
          <artifactId>spring-boot-starter-freemarker</artifactId>
 	 </dependency>
+	 <!-- thymeleaf和freemarker是可以共存的 -->
+	 <!--spring-boot-configuration:spring boot 配置处理器; -->
+   		<!-- <dependency>
+           <groupId>org.springframework.boot</groupId>
+           <artifactId>spring-boot-configuration-processor</artifactId>
+           <optional>true</optional>
+       </dependency> -->
   </dependencies>
-  <!-- thymeleaf和freemarker是可以共存的 -->
+  
   <build> 
   <!-- 如果我们要直接Main启动spring，那么以下plugin必须要添加，否则是无法启动的。如果使用maven 的spring-boot:run的话是不需要此配置的。（我在测试的时候，如果不配置下面的plugin也是直接在Main中运行的。） --> 
       <plugins>  

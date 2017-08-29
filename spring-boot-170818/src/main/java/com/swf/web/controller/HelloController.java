@@ -7,11 +7,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.alibaba.druid.support.http.StatViewServlet;
 import com.swf.entity.Demo;
 import com.swf.service.DemoService;
+import com.swf.study.EnvironmentAndProperties.PropertiesForAnnotation;
 import com.swf.study.EnvironmentAndProperties.PropertiesForValue;
-import com.swf.web.utils.SpringUtil;
+import com.swf.study.EnvironmentAndProperties.WiselySettings;
 
 @RestController// 标记为：restful
 public class HelloController {
@@ -19,8 +19,24 @@ public class HelloController {
 	@Resource
 	private DemoService demoService;
 	
-	//@Resource
-	//private PropertiesForValue properties;
+	@Resource
+	private PropertiesForValue properties;
+	
+	@Resource
+	private PropertiesForAnnotation pe;
+	
+	@Resource
+	private WiselySettings wiselySettings;
+	
+	@RequestMapping("/getwiselySettings")
+	public String getwiselySettings() {
+		return wiselySettings.getEmail()+"  "+wiselySettings.getGender()+"  "+wiselySettings.getName();
+	}
+	
+	@RequestMapping("/getEnvironment")
+	public String getEnvironment() {
+		return pe.getMongoProperties().getHost();
+	}
 	
 	@RequestMapping("/")
     public String hello(){
@@ -85,8 +101,8 @@ public class HelloController {
     	return "getBeans";
     }
     
-    /*@RequestMapping("/getPropertiesForValue")
+    @RequestMapping("/getPropertiesForValue")
     public String getPropertiesForValue() {
     	return "返回的Url:"+properties.getUrl();
-    }*/
+    }
 }

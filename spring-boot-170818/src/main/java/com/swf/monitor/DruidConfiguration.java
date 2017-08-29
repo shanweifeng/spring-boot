@@ -118,7 +118,7 @@ public class DruidConfiguration {
      * 注册一个StatViewServlet  这样的方式不需要添加注解：@ServletComponentScan
      * @return
      */
-    //@Bean
+    @Bean
     public ServletRegistrationBean DruidStatViewServle2(){
        //org.springframework.boot.context.embedded.ServletRegistrationBean提供类的进行注册.
        ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean(new StatViewServlet(),"/druid/*");
@@ -137,6 +137,7 @@ public class DruidConfiguration {
        servletRegistrationBean.addInitParameter("loginPassword","123456");
        //是否能够重置数据.
        servletRegistrationBean.addInitParameter("resetEnable","false");
+       System.out.println("DruidConfiguration.DruidStatViewServle2()");
        return servletRegistrationBean;
     }
    
@@ -144,7 +145,7 @@ public class DruidConfiguration {
      * 注册一个：filterRegistrationBean
      * @return
      */
-    //@Bean
+    @Bean
     public FilterRegistrationBean druidStatFilter2(){
       
        FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean(new WebStatFilter());
@@ -154,14 +155,16 @@ public class DruidConfiguration {
       
        //添加不需要忽略的格式信息.
        filterRegistrationBean.addInitParameter("exclusions","*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*");
+       System.out.println("DruidConfiguration.druidStatFilter2()");
        return filterRegistrationBean;
     }
     
-    //@Bean 通过代码注册的servlet、filter、listener不需要再对应的实现类上面添加注解  只有通过@ServletComponentScan扫描的东西才需要在实现类上面添加对应的注解@WebServlet @WebFilter @WebListener
+    //@Bean //通过代码注册的servlet、filter、listener不需要再对应的实现类上面添加注解  只有通过@ServletComponentScan扫描的东西才需要在实现类上面添加对应的注解@WebServlet @WebFilter @WebListener
     public ServletListenerRegistrationBean<EventListener> listener(){// 代码注册listener
     	ServletListenerRegistrationBean<EventListener> sl = new ServletListenerRegistrationBean<EventListener>();
     	sl.setListener(new globalListener());
     	//registrationBean.setOrder(1);  标注执行顺序
+    	System.out.println("DruidConfiguration.listener()");
     	return sl;
     }
 }

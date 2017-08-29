@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import com.swf.entity.Demo;
 import com.swf.dao.DemoRepository;
 
-@Service
+@Service("demoService")
 public class DemoService {
 
 	@Resource
@@ -31,6 +31,7 @@ public class DemoService {
 		jdbcTemplate.update(sql, new Object[]{demo.getName(),demo.getInfo()});
 	}
 	
+	//@Transactional(readOnly=true)
 	public Demo getById(long id){
 	    String sql = "select *from test where id=?";
 	    RowMapper<Demo> rowMapper = new BeanPropertyRowMapper<Demo>(Demo.class);

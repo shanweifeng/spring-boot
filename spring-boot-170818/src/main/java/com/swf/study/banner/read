@@ -1,0 +1,24 @@
+用于自定义输出springboot 的图标
+1、第一种方法在启动类中添加
+SpringApplication application = new SpringApplication(Application.class);
+		//application.setBannerMode(Banner.Mode.OFF);//关闭spring boot图标
+        application.run(new String[]{"hello,","单伟峰"});
+        来标记是否显示原有图标
+2、第二种方法在src/main/resource中新建banner.txt，文件里面配置
+	#这个是MANIFEST.MF文件中的版本号  这个如果没有在。MF文件中设置  可能不会有值显示
+	${application.version}              
+	 
+	#这个是上面的的版本号前面加v后上括号 这个如果没有在。MF文件中设置  可能不会有值显示
+	${application.formatted-version}
+	 
+	#这个是springboot的版本号 
+	${spring-boot.version}             
+	 
+	#这个是springboot的版本号 
+	${spring-boot.formatted-version}
+	在启动的时候会输出对应的信息
+3、重写Banner接口
+	SpringBoot提供了一个接口org.springframework.boot.Banner，他的实例可以被传给SpringApplication的setBanner(banner)方法。如果你闲得不行非要着重美化这个命令行输出的话，可以重写Banner接口的printBanner方法。
+4、在配置文件中添加 标记是否显示springboot 图标
+	#show banner  true|false
+	spring.main.show-banner=false

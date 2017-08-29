@@ -7,7 +7,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 @Component
-@Order(2)
+//@Order(2)
 public class MyStartupRunner1 implements CommandLineRunner {//接收参数
 
 	public void run(String... args) throws Exception {

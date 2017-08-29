@@ -1,6 +1,12 @@
 package com.swf.web.interrupter;
 
+import java.nio.charset.Charset;
+import java.util.List;
+
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
@@ -32,4 +38,18 @@ public class MyWebAppConfigurer extends WebMvcConfigurerAdapter{
         super.addInterceptors(registry);
 
     }
+	//****************************start 代码设定编码 同配置文件中配置
+	@Bean
+	public HttpMessageConverter<String> responseBodyConverter() {
+	    StringHttpMessageConverter converter = new StringHttpMessageConverter(Charset.forName("UTF-8"));
+	    // converter.setSupportedMediaTypes(Arrays.asList(new MediaType("text", "plain", Charset.forName("UTF-8"))));
+	    return converter;
+	}
+	
+	@Override
+	public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+		super.configureMessageConverters(converters);
+	    converters.add(responseBodyConverter());
+	}
+	//****************************end
 }
