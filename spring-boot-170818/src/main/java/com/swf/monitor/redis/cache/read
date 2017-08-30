@@ -1,0 +1,27 @@
+//<!--
+           包含支持UI模版（Velocity，FreeMarker，JasperReports），
+           邮件服务，
+           脚本服务(JRuby)，
+           缓存Cache（EHCache），
+           任务计划Scheduling（uartz）。
+        -->
+       <dependency>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-context-support</artifactId>
+        </dependency>
+ 
+       <!-- 添加redis支持-->
+       <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-redis</artifactId>
+        </dependency>
+        
+        
+  I、 使用reids实现缓存机制
+  如果不自己实现序列化方式则在redis中会出现乱码
+  GenericToStringSerializer：使用Spring转换服务进行序列化；
+JacksonJsonRedisSerializer：使用Jackson 1，将对象序列化为JSON；
+Jackson2JsonRedisSerializer：使用Jackson 2，将对象序列化为JSON；
+JdkSerializationRedisSerializer：使用Java序列化；
+OxmSerializer：使用Spring O/X映射的编排器和解排器（marshaler和unmarshaler）实现序列化，用于XML序列化；
+StringRedisSerializer：序列化String类型的key和value。实际上是String和byte数组之间的转换

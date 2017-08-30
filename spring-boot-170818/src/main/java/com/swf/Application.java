@@ -12,6 +12,7 @@ import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.ImportResource;
 import org.springframework.http.converter.HttpMessageConverter;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
@@ -32,7 +33,9 @@ import com.swf.study.banner.MyBanner;
 //@EnableConfigurationProperties(WiselySettings.class) 1.5以后@ConfigurationProperties中取消了locations
 //@Import(DruidConfiguration.class)//手动引入
 //@Configuration
-public class Application {//如果将当前类移动位置可能存在类不能自动注入到spring容器汇总，这里需要自定义springboot自动扫描路径以确保能扫描到所有需要注册的类
+@ImportResource(locations={"classpath:application-bean.xml"})//引入xml文件 如果不引入的话  xml文件中定义的东西均不能被springboot扫描到 xml文件的引入 也可以在其他标注@Configuration类中引入
+//@ImportResource(locations={"file:d:/test/application-bean1.xml"})  ImportResource有两种引入路径 classPath  file  任意一种均可以使用
+public class Application {//如果将当前类移动位置可能存在类不能自动注入到spring容器汇总，这里需要自 定义springboot自动扫描路径以确保能扫描到所有需要注册的类
 	/**
 	 * 其中@SpringBootApplication申明让spring boot自动给程序进行必要的配置，等价于以默认属性使用@Configuration，@EnableAutoConfiguration和@ComponentScan
 	 * @RestController返回json字符串的数据，直接可以编写RESTFul的接口

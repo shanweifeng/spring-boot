@@ -91,6 +91,12 @@ public class HelloController {
        return demoService.getById(id);//保存数据.
     }
     
+    @RequestMapping("/delete/{id}")
+    public Object deleteFromCache(@PathVariable("id")long id) {
+    	demoService.deleteFromCache(id);
+    	return "删除成功";
+    }
+    
     @Resource
     private DataSource dataSource;
     @RequestMapping("/getBeans")

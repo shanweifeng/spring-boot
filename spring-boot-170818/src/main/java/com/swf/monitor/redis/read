@@ -1,0 +1,21 @@
+//redis 实现的操作
+cache:redis实现缓存机制
+
+storage:redis实现仓库机制
+
+jta:redis实现分布式事务，多阶段提交（二阶段提交、三阶段提交降低分布式事务风险）
+
+index:redis实现索引
+
+solr:redis实现搜索功能（ES ）
+
+（spark统计   kafka+stom流式计算）试试统计数据变化
+
+
+SearchStrategy
+
+启动的时候出现了两个问题
+1、服务器防火墙没有关  端口没有开放出来，最简单的是将防火墙关闭
+2、关闭防火墙后再次访问出现下面信息
+	DENIED Redis is running in protected mode because protected mode is enabled, no bind address was specified
+	这个主要是说redis开启了保护模式，保护模式下需要用户名密码登录，这里去redis.conf中将保护模式关闭然后重启redis(protected mode=no)
