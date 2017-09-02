@@ -54,7 +54,7 @@ public class HelloController {
 	@RequestMapping("/json")
     public Object json(){
 		Demo d = new Demo();
-		d.setId(100l);
+		d.setId(100);
 		d.setName("swf");
 		d.setInfo("这个是测试fastJson中的@JSONField是否起作用，有用则不会返回");
         return d;
@@ -92,7 +92,7 @@ public class HelloController {
     }
     
     @RequestMapping("/delete/{id}")
-    public Object deleteFromCache(@PathVariable("id")long id) {
+    public Object deleteFromCache(@PathVariable("id")int id) {
     	demoService.deleteFromCache(id);
     	return "删除成功";
     }

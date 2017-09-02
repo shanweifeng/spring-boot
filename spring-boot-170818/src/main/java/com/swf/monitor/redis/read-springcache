@@ -1,0 +1,314 @@
+需要感慨一下，spring3.0时丢弃了2.5时的spring-modules-cache.jar，致使无法使用spring来方便的管理cache注解，好在3.1.M1中增加了对cache注解的支持，可喜可贺啊！
+ 
+希望了解spring2.5的cache注解，可以参考如下内容：
+Spring基于注解的缓存配置--EHCache AND OSCache  
+Spring基于注解的缓存配置--web应用实例
+2.5时，spring没有自己的解决方案，都是采用对许多第三方cache框架的支持，比如EHCache和OSCache等等，不过到了3.1，spring就只提供EHCache的支持了，不过spring3.1还给出了自己的解决方案。
+ 
+下面简单介绍一下spring3.1.M1中的cache功能。
+spring3.1.M1中负责cache的模块是org.springframework.context-3.1.0.M1.jar
+ 
+与2.5时的modules模块类似，3.1的注解缓存也是在方法上声明注解，3.1同样提供了两个注解：
+@Cacheable：负责将方法的返回值加入到缓存中
+@CacheEvict：负责清除缓存
+ 
+@Cacheable 支持如下几个参数：
+value：缓存位置名称，不能为空，如果使用EHCache，就是ehcache.xml中声明的cache的name
+key：缓存的key，默认为空，既表示使用方法的参数类型及参数值作为key，支持SpEL
+condition：触发条件，只有满足条件的情况才会加入缓存，默认为空，既表示全部都加入缓存，支持SpEL
+ 
+例如：
+Java代码  收藏代码
+//将缓存保存进andCache，并使用参数中的userId加上一个字符串(这里使用方法名称)作为缓存的key   
+@Cacheable(value="andCache",key="#userId + 'findById'")  
+public SystemUser findById(String userId) {  
+    SystemUser user = (SystemUser) dao.findById(SystemUser.class, userId);        
+    return user ;         
+}  
+//将缓存保存进andCache，并当参数userId的长度小于32时才保存进缓存，默认使用参数值及类型作为缓存的key  
+@Cacheable(value="andCache",condition="#userId.length < 32")  
+public boolean isReserved(String userId) {  
+    System.out.println("hello andCache"+userId);  
+    return false;  
+}  
+ 
+ 
+@CacheEvict 支持如下几个参数：
+value：缓存位置名称，不能为空，同上
+key：缓存的key，默认为空，同上
+condition：触发条件，只有满足条件的情况才会清除缓存，默认为空，支持SpEL
+allEntries：true表示清除value中的全部缓存，默认为false
+ 
+例如：
+Java代码  收藏代码
+//清除掉指定key的缓存  
+@CacheEvict(value="andCache",key="#user.userId + 'findById'")  
+public void modifyUserRole(SystemUser user) {  
+         System.out.println("hello andCache delete"+user.getUserId());  
+}  
+  
+//清除掉全部缓存  
+@CacheEvict(value="andCache",allEntries=true)  
+public void setReservedUsers() {  
+    System.out.println("hello andCache deleteall");  
+}  
+ 
+一般来说，我们的更新操作只需要刷新缓存中某一个值，所以定义缓存的key值的方式就很重要，最好是能够唯一，因为这样可以准确的清除掉特定的缓存，而不会影响到其它缓存值 ，
+比如我这里针对用户的操作，使用(userId+方法名称)的方式设定key值 ，当然，你也可以找到更适合自己的方式去设定。
+ 
+SpEL：Spring Expression Language
+关于SpEL的介绍，可以参考如下地址：
+http://static.springsource.org/spring/docs/3.1.0.M1/spring-framework-reference/html/expressions.html
+ 
+ 
+了解了cache的注解之后，接下来说说如何使注解生效，其实就是需要在spring的配置文件中增加一些配置。
+ 
+1.spring-cache
+首先我们来看一下如何使用spring3.1自己的cache，
+需要在命名空间中增加cache的配置
+Xml代码  收藏代码
+<beans xmlns="http://www.springframework.org/schema/beans"  
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"  
+     xmlns:cache="http://www.springframework.org/schema/cache"  
+    xsi:schemaLocation="  
+            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd  
+            http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache-3.1.xsd">  
+ 
+之后添加如下声明：
+Xml代码  收藏代码
+      <!-- 启用缓存注解功能，这个是必须的，否则注解不会生效，另外，该注解一定要声明在spring主配置文件中才会生效 -->  
+<cache:annotation-driven cache-manager="cacheManager"/>  
+  
+  
+<!-- spring自己的换管理器，这里定义了两个缓存位置名称 ，既注解中的value -->  
+<bean id="cacheManager" class="org.springframework.cache.support.SimpleCacheManager">  
+    <property name="caches">  
+        <set>  
+            <bean  
+                class="org.springframework.cache.concurrent.ConcurrentCacheFactoryBean"  
+                p:name="default" />  
+            <bean  
+                class="org.springframework.cache.concurrent.ConcurrentCacheFactoryBean"  
+                p:name="andCache" />  
+        </set>  
+    </property>  
+</bean>   
+ 
+2.spring-ehcache
+接下来说说对ehcache的支持，其实只需要把cacheManager换成EHCache的cacheManager即可，如下：
+Xml代码  收藏代码
+       <!-- 启用缓存注解功能，这个是必须的，否则注解不会生效，另外，该注解一定要声明在spring主配置文件中才会生效 -->  
+<cache:annotation-driven cache-manager="cacheManager"/>  
+  
+<!-- cacheManager工厂类，指定ehcache.xml的位置 -->   
+<bean id="cacheManagerFactory" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean"   
+    p:configLocation="classpath:/config/ehcache.xml" />   
+  
+<!-- 声明cacheManager -->  
+<bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager"   
+    p:cacheManager-ref="cacheManagerFactory" />  
+ 
+ 
+ ehcache.xml
+Xml代码  收藏代码
+<?xml version="1.0" encoding="UTF-8"?>  
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
+    xsi:noNamespaceSchemaLocation="ehcache.xsd" updateCheck="true"  
+    monitoring="autodetect">  
+    <!--  
+    <diskStore path="java.io.tmpdir" /> -->  
+    <diskStore path="E:/cachetmpdir"/>  
+    <defaultCache maxElementsInMemory="10000" eternal="false"  
+        timeToIdleSeconds="120" timeToLiveSeconds="120" overflowToDisk="true"  
+        maxElementsOnDisk="10000000" diskPersistent="false"  
+        diskExpiryThreadIntervalSeconds="120" memoryStoreEvictionPolicy="LRU" />  
+          
+    <cache name="andCache" maxElementsInMemory="10000"  
+        maxElementsOnDisk="1000" eternal="false" overflowToDisk="true"  
+        diskSpoolBufferSizeMB="20" timeToIdleSeconds="300" timeToLiveSeconds="600"  
+        memoryStoreEvictionPolicy="LFU" />  
+</ehcache>    
+ 
+ 
+ok，这样注解缓存就生效了。
+
+
+spring memcache
+Spring3.1 Cache注解 
+
+依赖jar包：
+Xml代码  收藏代码
+<!-- simple-spring-memcached -->  
+        <dependency>  
+            <groupId>com.google.code.simple-spring-memcached</groupId>  
+            <artifactId>simple-spring-memcached</artifactId>  
+            <version>3.5.0</version>  
+        </dependency>  
+        <dependency>  
+            <groupId>com.google.code.simple-spring-memcached</groupId>  
+            <artifactId>xmemcached-provider</artifactId>  
+            <version>3.5.0</version>  
+        </dependency>  
+        <dependency>  
+            <groupId>com.googlecode.xmemcached</groupId>  
+            <artifactId>xmemcached</artifactId>  
+            <version>2.0.0</version>  
+        </dependency>  
+ 
+applicationContext-cache-memcached.xml
+Xml代码  收藏代码
+<!-- 启用缓存注解功能，这个是必须的，否则注解不会生效，另外，该注解一定要声明在spring主配置文件中才会生效 -->  
+    <cache:annotation-driven cache-manager="cacheManager" />  
+      
+    <!-- spring自己的换管理器，这里定义了两个缓存位置名称 ，既注解中的value -->  
+    <bean id="cacheManager" class="org.springframework.cache.support.SimpleCacheManager">  
+        <property name="caches">  
+            <set>  
+                <bean class="org.cpframework.core.cache.memcached.MemcachedCache">  
+                    <property name="cache" ref="defaultCache"/>  
+                </bean>  
+                <bean class="org.cpframework.core.cache.memcached.MemcachedCache">  
+                    <property name="cache" ref="commonCache"/>  
+                </bean>  
+            </set>  
+        </property>  
+    </bean>  
+  
+  
+    <!-- memcached client defaultCache -->  
+    <bean name="defaultCache" class="com.google.code.ssm.CacheFactory">  
+        <property name="cacheClientFactory">  
+            <bean  
+                class="com.google.code.ssm.providers.xmemcached.MemcacheClientFactoryImpl" />  
+        </property>  
+        <property name="addressProvider">  
+            <bean class="com.google.code.ssm.config.DefaultAddressProvider">  
+                <property name="address" value="192.168.xx.xx:11211" />  
+            </bean>  
+        </property>  
+        <property name="configuration">  
+            <bean class="com.google.code.ssm.providers.CacheConfiguration">  
+                <property name="consistentHashing" value="true" />  
+            </bean>  
+        </property>  
+        <property name="cacheName" value="default"/>  
+          
+    </bean>  
+    <!-- memcached client commonCache -->  
+    <bean name="commonCache" class="com.google.code.ssm.CacheFactory">  
+        <property name="cacheClientFactory">  
+            <bean  
+                class="com.google.code.ssm.providers.xmemcached.MemcacheClientFactoryImpl" />  
+        </property>  
+        <property name="addressProvider">  
+            <bean class="com.google.code.ssm.config.DefaultAddressProvider">  
+                <property name="address" value="192.168.xx.xx:11211" />  
+            </bean>  
+        </property>  
+        <property name="configuration">  
+            <bean class="com.google.code.ssm.providers.CacheConfiguration">  
+                <property name="consistentHashing" value="true" />  
+            </bean>  
+        </property>  
+        <property name="cacheName" value="commonCache"/>  
+          
+    </bean>  
+ 
+MemcachedCache.java
+Java代码  收藏代码
+package org.cpframework.core.cache.memcached;  
+  
+import java.util.concurrent.TimeoutException;  
+  
+import org.springframework.cache.Cache;  
+import org.springframework.cache.support.SimpleValueWrapper;  
+  
+import com.google.code.ssm.api.format.SerializationType;  
+import com.google.code.ssm.providers.CacheException;  
+  
+  
+  
+public class MemcachedCache implements Cache{  
+      
+    private com.google.code.ssm.Cache cache;  
+      
+    public com.google.code.ssm.Cache getCache() {  
+        return cache;  
+    }  
+  
+    public void setCache(com.google.code.ssm.Cache cache) {  
+        this.cache = cache;  
+    }  
+  
+    @Override  
+    public String getName() {  
+        // TODO Auto-generated method stub  
+        return this.cache.getName();  
+    }  
+  
+    @Override  
+    public Object getNativeCache() {  
+        // TODO Auto-generated method stub  
+        return this.cache;  
+    }  
+  
+    @Override  
+    public ValueWrapper get(Object key) {  
+        // TODO Auto-generated method stub  
+        Object object = null;  
+        try {  
+            object = this.cache.get((String)key, SerializationType.JAVA);  
+        } catch (TimeoutException e) {  
+            // TODO Auto-generated catch block  
+            e.printStackTrace();  
+        } catch (CacheException e) {  
+            // TODO Auto-generated catch block  
+            e.printStackTrace();  
+        }  
+        return (object != null ? new SimpleValueWrapper(object) : null);  
+    }  
+  
+    @Override  
+    public void put(Object key, Object value) {  
+        // TODO Auto-generated method stub  
+        try {  
+            this.cache.set((String)key, 86400, value, SerializationType.JAVA);  
+        } catch (TimeoutException e) {  
+            // TODO Auto-generated catch block  
+            e.printStackTrace();  
+        } catch (CacheException e) {  
+            // TODO Auto-generated catch block  
+            e.printStackTrace();  
+        }  
+    }  
+  
+    @Override  
+    public void evict(Object key) {  
+        // TODO Auto-generated method stub  
+        try {  
+            this.cache.delete((String)key);  
+        } catch (TimeoutException e) {  
+            // TODO Auto-generated catch block  
+            e.printStackTrace();  
+        } catch (CacheException e) {  
+            // TODO Auto-generated catch block  
+            e.printStackTrace();  
+        }  
+    }  
+  
+    @Override  
+    public void clear() {  
+        // TODO Auto-generated method stub  
+        try {  
+            this.cache.flush();  
+        } catch (TimeoutException e) {  
+            // TODO Auto-generated catch block  
+            e.printStackTrace();  
+        } catch (CacheException e) {  
+            // TODO Auto-generated catch block  
+            e.printStackTrace();  
+        }  
+    }  
+}  
+
+

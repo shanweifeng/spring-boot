@@ -2,16 +2,21 @@ package com.swf.monitor.redis.cache;
 
 import java.lang.reflect.Method;
 
+import javax.el.TypeConverter;
+
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.serializer.GenericToStringSerializer;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.JacksonJsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.stereotype.Component;
@@ -27,8 +32,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author Administrator
  *
  */
-@Component
-@EnableCaching
+//@Component
+//@EnableCaching//标注启动缓存. 使用redis实现缓存机制
 public class RedisCacheConfig extends CachingConfigurerSupport{//extends CachingConfigurerSupport 重写keyGenerator生成缓存key策略
 
 	/**
@@ -36,7 +41,7 @@ public class RedisCacheConfig extends CachingConfigurerSupport{//extends Caching
      * @param redisTemplate
      * @return
      */
-    @Bean
+    //@Bean
     public CacheManager cacheManager(RedisTemplate<?,?> redisTemplate) {
        CacheManager cacheManager = new RedisCacheManager(redisTemplate);
        /* //设置缓存过期时间
@@ -56,8 +61,15 @@ public class RedisCacheConfig extends CachingConfigurerSupport{//extends Caching
      * @param factory : 通过Spring进行注入，参数在application.properties进行配置；
      * @return
      */
-    @Bean
+    //@Bean
     public RedisTemplate<String, String> redisTemplate(RedisConnectionFactory factory) {
+    	/*GenericToStringSerializer：使用Spring转换服务进行序列化；
+    	JacksonJsonRedisSerializer：使用Jackson 1，将对象序列化为JSON；
+    	Jackson2JsonRedisSerializer：使用Jackson 2，将对象序列化为JSON；
+    	JdkSerializationRedisSerializer：使用Java序列化；
+    	OxmSerializer：使用Spring O/X映射的编排器和解排器（marshaler和unmarshaler）实现序列化，用于XML序列化；
+    	StringRedisSerializer：序列化String类型的key和value。实际上是String和byte数组之间的转换*/
+    	
        /*RedisTemplate<String, String> redisTemplate = new RedisTemplate<String, String>();
        redisTemplate.setConnectionFactory(factory);
       
@@ -73,23 +85,28 @@ public class RedisCacheConfig extends CachingConfigurerSupport{//extends Caching
     	StringRedisTemplate template = new StringRedisTemplate(factory);
         //定义key序列化方式
         RedisSerializer<String> redisSerializer = new StringRedisSerializer();//Long类型会出现异常信息;需要我们上面的自定义key生成策略，一般没必要
+        template.setKeySerializer(redisSerializer);
         //定义value的序列化方式
-        Jackson2JsonRedisSerializer jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer(Object.class);
+        
+        Jackson2JsonRedisSerializer<Object> redisSerializerValue = new Jackson2JsonRedisSerializer<Object>(Object.class);
         ObjectMapper om = new ObjectMapper();
         om.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
         om.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
-        jackson2JsonRedisSerializer.setObjectMapper(om);
+        redisSerializerValue.setObjectMapper(om);
         
-        template.setKeySerializer(redisSerializer);
-        template.setValueSerializer(jackson2JsonRedisSerializer);
-        template.setHashValueSerializer(jackson2JsonRedisSerializer);
+        //GenericToStringSerializer<Object> redisSerializerValue = new GenericToStringSerializer<Object>(Object.class);
+        //ConversionService conversionService = new ConversionService();
+        //redisSerializerValue1.setConversionService(conversionService);
+        
+        template.setValueSerializer(redisSerializerValue);
+        template.setHashValueSerializer(redisSerializerValue);//序列化的多种方式
         template.afterPropertiesSet();
         return template;
     }
     
     /**
      * 自定义key.
-     * 此方法将会根据类名+方法名+所有参数的值生成唯一的一个key,即使@Cacheable中的value属性一样，key也会不一样。
+     * 此方法将会根据类名+方法名+所有参数的值生成唯一的一个key,即使@Cacheable中的value属性一样，key也会不一样。  如果在方法@Cacheable中设置了key  则该方法不起作用
      */
     @Override
     public KeyGenerator keyGenerator() {//重写CachingConfigurerSupport中的方法  如果不重写  使用的是spring默认序列化方式
@@ -99,7 +116,7 @@ public class RedisCacheConfig extends CachingConfigurerSupport{//extends Caching
               // This will generate a unique key of the class name, the method name
               //and all method parameters appended.
               StringBuilder sb = new StringBuilder();
-              //sb.append(o.getClass().getName());
+              sb.append(o.getClass().getName());
               sb.append(method.getName());
               for (Object obj : objects) {
                   sb.append(obj.toString());

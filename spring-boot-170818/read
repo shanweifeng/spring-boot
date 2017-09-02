@@ -167,3 +167,88 @@ solr:redis实现搜索功能（ES ）
 
 
 SearchStrategy
+
+
+
+第三十七  Spring Boot集成EHCache实现缓存机制【从零开始学Spring Boot】 http://412887952-qq-com.iteye.com/blog/2294952
+	Spring Data JPA,Spring Boot 使用Mysql,Spring MVC,EHCache,Spring Cache等（其中@Cacheable请看上一节的理论知识），具体分如下几个步骤：
+（1）新建Maven Java Project
+（2）在pom.xml中加入依赖包
+（3）编写Spring Boot启动类；
+（4）配置application.properties;
+（5）编写缓存配置类以及ehcache.xml配置文件；
+（6）编写DemoInfo实体类进行测试；
+（7）编写持久类DemoInfoRepository;
+（8）编写处理类DemoInfoService;
+（9）编写DemoInfoController测试类；
+（10）运行测试；
+a、新建maven项目
+b、在pom.xml文件中加入相应的依赖包，Spring Boot父节点依赖包；spring boot web支持；缓存依赖spring-context-support；集成ehcache需要的依赖；JPA操作数据库；mysql 数据库驱动，具体pom.xml文件：
+	<properties>  
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>  
+        <!-- 配置JDK编译版本. -->  
+        <java.version>1.8</java.version>  
+    </properties>  
+    <!-- spring boot 父节点依赖,引入这个之后相关的引入就不需要添加version配置，  spring boot会自动选择最合适的版本进行添加。   -->  
+    <parent>  
+        <groupId>org.springframework.boot</groupId>  
+        <artifactId>spring-boot-starter-parent</artifactId>  
+        <version>1.3.3.RELEASE</version>  
+    </parent>  
+    <dependencies>  
+        <!-- 单元测试. -->  
+        <dependency>  
+            <groupId>junit</groupId>  
+            <artifactId>junit</artifactId>  
+            <scope>test</scope>  
+        </dependency>  
+        <!-- spring boot web支持：mvc,aop... -->  
+        <dependency>  
+            <groupId>org.springframework.boot</groupId>  
+            <artifactId>spring-boot-starter-web</artifactId>  
+        </dependency>  
+        <!--    包含支持UI模版（Velocity，FreeMarker，JasperReports），  邮件服务，   脚本服务(JRuby)，  缓存Cache（EHCache），   任务计划Scheduling（uartz）。  -->  
+        <dependency>  
+          <groupId>org.springframework</groupId>  
+          <artifactId>spring-context-support</artifactId>  
+        </dependency>  
+        <!-- 集成ehcache需要的依赖-->  
+        <dependency>  
+            <groupId>net.sf.ehcache</groupId>  
+            <artifactId>ehcache</artifactId>  
+        </dependency>  
+        <!-- JPA操作数据库. -->  
+        <dependency>  
+          <groupId>org.springframework.boot</groupId>  
+          <artifactId>spring-boot-starter-data-jpa</artifactId>  
+        </dependency>  
+        <!-- mysql 数据库驱动. -->  
+        <dependency>  
+          <groupId>mysql</groupId>  
+          <artifactId>mysql-connector-java</artifactId>  
+        </dependency>  
+        <!-- Spring boot单元测试. -->  
+        <dependency>  
+            <groupId>org.springframework.boot</groupId>  
+            <artifactId>spring-boot-starter-test</artifactId>  
+            <scope>test</scope>  
+        </dependency> 
+c、编写启动类
+@SpringBootApplication
+public class App {
+    public static void main(String[] args) {
+       SpringApplication.run(App.class, args);
+    }
+}
+d、配置application.properties;   
+e、编写缓存配置类以及ehcache.xml配置文件：
+
+
+
+
+
+
+
+
+
+        

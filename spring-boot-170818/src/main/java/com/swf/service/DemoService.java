@@ -24,6 +24,14 @@ public class DemoService {
 	@Resource
 	private DemoRepository demoRepository;
 	
+	//这里的单引号不能少，否则会报错，被识别是一个对象;  
+    public static final String CACHE_KEY = "'demoInfo'";  
+     
+    /** 
+     * value属性表示使用哪个缓存策略，缓存策略在ehcache.xml 
+    */  
+    public static final String DEMO_CACHE_NAME = "demo";  
+	
 	public DemoService() {
 		System.out.println("DemoService.DemoService()");
 	    System.out.println("DemoService.DemoService()");
@@ -43,7 +51,10 @@ public class DemoService {
 	}
 	
 	//@Transactional(readOnly=true)
-	@Cacheable(value="demoInfo") //缓存,这里没有指定key.
+	//@CachePut(value = DEMO_CACHE_NAME,key = "'demoInfo_'+#updated.getId()")修改缓存
+	//@Cacheable(value="demoInfo",key="'com.swf.service.'+#id") //缓存,这里没有指定key.
+	//@Cacheable(value="demoInfo")
+	 @Cacheable(value=DEMO_CACHE_NAME,key="'demoInfo_'+#id")//添加缓存
 	public Demo getById(long id){
 		System.err.println("DemoInfoServiceImpl.findById()=========从数据库中进行获取的....id="+id);
 	    String sql = "select *from test where id=?";
@@ -60,7 +71,8 @@ public class DemoService {
        System.out.println(valueOperations.get("mykey4"));
     }
     
-    @CacheEvict(value="demoInfo")
+    //@CacheEvict(value = DEMO_CACHE_NAME,key = "'demoInfo_'+#updated.getId()")//清除指定缓存 
+    @CacheEvict(value="demoInfo")//删除所有缓存
     public void deleteFromCache(long id) {
        System.out.println("DemoInfoServiceImpl.delete().从缓存中删除.");
     }

@@ -1,0 +1,2 @@
+#当前为spring boot集成ehcache
+ehcache.xml中有cache配置
