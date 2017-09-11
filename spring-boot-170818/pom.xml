@@ -82,6 +82,12 @@
             <version>1.4.7.RELEASE</version><!-- 此处需要注意引入jar的版本 -->
      </dependency>
      
+     <!-- 分布式时使用redis管理spring session -->
+     <dependency>
+      <groupId>org.springframework.session</groupId>
+      <artifactId>spring-session-data-redis</artifactId>
+	 </dependency>
+     
      <!-- 连接数据库 -->
      <dependency>
         <groupId>mysql</groupId>

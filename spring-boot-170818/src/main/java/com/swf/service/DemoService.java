@@ -18,6 +18,7 @@ import com.swf.dao.DemoRepository;
 @Service("demoService")
 public class DemoService {
 
+	
 	@Resource
 	private JdbcTemplate jdbcTemplate;
 	
@@ -32,6 +33,7 @@ public class DemoService {
     */  
     public static final String DEMO_CACHE_NAME = "demo";  
 	
+   
 	public DemoService() {
 		System.out.println("DemoService.DemoService()");
 	    System.out.println("DemoService.DemoService()");

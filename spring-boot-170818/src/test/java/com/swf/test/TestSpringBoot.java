@@ -11,6 +11,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.swf.Application;
+import com.swf.entity.Demo;
 import com.swf.service.DemoService;
 
 ////SpringJUnit支持，由此引入Spring-Test框架支持！
@@ -26,6 +27,12 @@ public class TestSpringBoot {
    
 	@Test
     public void testGetName(){
-       Assert.assertEquals("hello",demoService.getById(2));
+       /*Assert.assertEquals("hello",demoService.getById(2));*/
+		Demo demo=new Demo();
+		demo.setName("单伟峰");
+		demo.setInfo("info");
+		demoService.saveByJDBCTemplate(demo);
+		
+		System.out.println("demoService.getById(8)"+demoService.getById(8));
     }
 }

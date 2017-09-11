@@ -16,9 +16,9 @@ import lombok.extern.slf4j.Slf4j;
  * @author swf
  * @version 1.0
  */
-@Slf4j
-@Configuration
-@EnableCaching//标注启动缓存.
+//@Slf4j
+//@Configuration
+//@EnableCaching//标注启动缓存.
 public class CacheConfiguration {
 
 	private Logger logger = LoggerFactory.getLogger(CacheConfiguration.class);
@@ -27,7 +27,7 @@ public class CacheConfiguration {
 	 * @param bean
 	 * @return
 	 */
-	@Bean
+	//@Bean
 	public EhCacheCacheManager ehCacheCacheManager(EhCacheManagerFactoryBean bean) {
 		logger.info("CacheConfiguration.ehCacheCacheManager() @bean, ehcache 主要的管理器");
 		return new EhCacheCacheManager(bean.getObject());
@@ -39,7 +39,7 @@ public class CacheConfiguration {
 	 * 跟别的（如hibernate的Ehcache）cache共享
 	 * @return
 	 */
-	@Bean
+	//@Bean
 	public EhCacheManagerFactoryBean ehCacheManagerFacrotyBean() {
 		logger.info("CacheConfiguration.ehCacheManagerFacrotyBean() 创建cacheManage");
 		EhCacheManagerFactoryBean cacheManagerFactoryBean = new EhCacheManagerFactoryBean();
