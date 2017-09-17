@@ -156,6 +156,7 @@ public class DruidConfiguration {
        //添加不需要忽略的格式信息.
        filterRegistrationBean.addInitParameter("exclusions","*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*");
        System.out.println("DruidConfiguration.druidStatFilter2()");
+       //filterRegistrationBean.setEnabled(false); //怎么取消  Filter自动注册,不会添加到FilterChain中. 如果不想将@Bean注册的类与已经存在的Bean平级，但是又需要将其注入到filter中而不进入filterChain中，使用当前设置原filter需要@Bean注解
        return filterRegistrationBean;
     }
     

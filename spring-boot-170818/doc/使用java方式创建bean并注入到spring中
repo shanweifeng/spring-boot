@@ -1,0 +1,226 @@
+#当前文档为多数据源切换前提
+
+从Spring 3.0开始，增加了一种新的途径来配置Bean Definition，这就是通过Java Code配置Bean Definition。
+
+       与XML和Annotation两种配置方式不同点在于：
+
+       前两种方式XML和Annotation的配置方式为预定义方式，即开发人员通过XML文件或者Annotation预定义配置Bean的各种属性后，启动Spring容器，Spring容器会首先解析这些配置属性，生成对应的Bean Definition,装入到DefaultListtableBeanFactory对象的属性容器中，以此同时，Spring框架也会定义内部使用的Bean定义，如Bean名为：org.springframework.context.annotation.internalConfigurationAnnotationProcessor”的 ConfigurationClassPostProcessor 定义。而后此刻不会做任何Bean Definition的解析动作，Spring框架会根据前两种配置，过滤出BeanDefinitionRegistryPostProcessor 类型的Bean定义，并通过Spring框架生成对应的Bean对象（如 ConfigurationClassPostProcessor 实例）。。结合 Spring 上下文源码可知这个对象是一个 processor 类型工具类，Spring 容器会在实例化开发人员所定义的 Bean 前先调用该 processor 的 postProcessBeanDefinitionRegistry(…) 方法。此处实现基于 Java Code 配置Bean Definition的处理。
+
+ 
+
+       基于 Java Code 的配置方式，其执行原理不同于前两种。它是在 Spring 框架已经解析了基于 XML 和 Annotation 配置后，通过加入 BeanDefinitionRegistryPostProcessor 类型的 processor 来处理配置信息，让开发人员通过 Java 编程方式定义一个 Java 对象。其优点在于可以将配置信息集中在一定数量的 Java 对象中，同时通过 Java 编程方式，比基于 Annotation 方式具有更高的灵活性。并且该配置方式给开发人员提供了一种非常好的范例来增加用户自定义的解析工具类。其主要缺点在于与 Java 代码结合紧密，配置信息的改变需要重新编译 Java 代码，另外这是一种新引入的解析方式，需要一定的学习成本。
+
+ 
+
+提及一点的就是，Spring框架有3个主要的Hook类，分别是：
+
+org.springframework.context.ApplicationContextAware 
+它的setApplicationContext 方法将在Spring启动之前第一个被调用。我们用来同时启动Jdon框架。
+
+org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor 
+它的postProcessBeanDefinitionRegistry 和 postProcessBeanFactory 方法是第二和第三被调用，它们在Bean初始化创建之前启动，如果Spring的bean需要的其他第三方中的组件，我们在这里将其注入给Spring。
+
+org.springframework.context.ApplicationListener 
+用于在初始化完成后做一些事情，当Spring所有XML或元注解的Bean都启动被创建成功了，这时会调用它的唯一方法onApplicationEvent。
+ 
+
+下面我们来完成一个，自己通过java代码创建bean，并注册为Spring管理。 
+<!--[if !supportLineBreakNewLine]-->
+<!--[endif]-->
+
+本例中，我们创建一个接口，然后创建该接口的2个实现类，分别命名不同的名字，然后在需要注入的地方使用@Qualifier 指定注入对应的实例。
+
+ 
+
+接口com.kfit.demo.Shanhy.java
+
+package com.kfit.demo;
+ 
+publicinterface Shanhy {
+  
+   publicvoid dispaly();
+  
+}
+ 
+
+实现类com.kfit.demo.ShanhyA.java
+
+package com.kfit.demo;
+ 
+publicclass ShanhyA implements Shanhy{
+ 
+   @Override
+   publicvoid dispaly() {
+      System.out.println("ShanhyA.dispaly()");
+   }
+}
+ 
+
+ 
+
+实现类com.kfit.ShanhyB.java
+
+package com.kfit.demo;
+ 
+publicclass ShanhyB implements Shanhy {
+ 
+   @Override
+   publicvoid dispaly() {
+      System.out.println("ShanhyB.dispaly()");
+   }
+ 
+}
+ 
+
+ 
+
+定义接口BeanDefinitionRegistryPostProcessor的实现:
+
+com.kfit.config.MyBeanDefinitionRegistryPostProcessor:
+
+package com.kfit.config;
+ 
+import org.springframework.beans.BeansException;
+import org.springframework.beans.MutablePropertyValues;
+import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
+import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.BeanDefinitionHolder;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
+import org.springframework.beans.factory.support.BeanNameGenerator;
+import org.springframework.context.annotation.AnnotationBeanNameGenerator;
+import org.springframework.context.annotation.Configuration;
+ 
+import com.kfit.demo.ShanhyA;
+import com.kfit.demo.ShanhyB;
+ 
+/**
+ * 实现自己实例化bean并注册为Spring管理
+ * @author Angel(QQ:412887952)
+ * @version v.0.1
+ */
+@Configuration
+publicclass MyBeanDefinitionRegistryPostProcessor implements BeanDefinitionRegistryPostProcessor {
+   
+    //bean 的名称生成器.
+     private BeanNameGenerator beanNameGenerator = new AnnotationBeanNameGenerator();
+ 
+   
+    @Override
+    publicvoid postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+       System.out.println("MyBeanDefinitionRegistryPostProcessor.postProcessBeanFactory()");
+      
+             
+    }
+ 
+    /**
+     * 先执行：postProcessBeanDefinitionRegistry()方法，
+     * 在执行：postProcessBeanFactory()方法。
+     *
+     */
+    @Override
+    publicvoid postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
+    System.out.println("MyBeanDefinitionRegistryPostProcessor.postProcessBeanDefinitionRegistry()");
+      
+       /*
+        * 在这里可以注入bean.
+        */
+       registerBean(registry, "shanyA", ShanhyA.class);
+       registerBean(registry, "shanyB", ShanhyB.class);
+    }
+   
+    /**
+     * 提供公共的注册方法。
+     * @param beanDefinitionRegistry
+     * @param name
+     * @param beanClass
+     */
+    privatevoid registerBean(BeanDefinitionRegistry registry,String name,Class<?> beanClass){
+       AnnotatedBeanDefinition annotatedBeanDefinition  = new AnnotatedGenericBeanDefinition(beanClass);
+         //可以自动生成name
+       String beanName = (name != null?name:this.beanNameGenerator.generateBeanName(annotatedBeanDefinition, registry));
+       //bean注册的holer类.
+       BeanDefinitionHolder beanDefinitionHolder = new BeanDefinitionHolder(annotatedBeanDefinition, beanName);
+       //使用bean注册工具类进行注册.
+       BeanDefinitionReaderUtils.registerBeanDefinition(beanDefinitionHolder, registry);
+    }
+   
+}
+这个类里的代码比较多，在这里简单的介绍下：方法postProcessBeanDefinitionRegistry()是用来注册bean的；而具体注册的代码比较是通用的，我们定义一个私有的方法进行注册。
+
+postProcessBeanFactory()是bean配置的工厂方法，在这个方法中可以获取到我们所有在postProcessBeanDefinitionRegistry方法中注册的所有bean，在这里我们可以进行属性的设置等操作。
+
+// 这里可以设置属性，例如
+       BeanDefinition beanDefinition = beanFactory.getBeanDefinition("dataSourceA");
+       MutablePropertyValues mutablePropertyValues = beanDefinition.getPropertyValues();
+       //加入属性.
+       mutablePropertyValues.addPropertyValue("driverClassName", "com.mysql.jdbc.Driver");
+       mutablePropertyValues.addPropertyValue("url", "jdbc:mysql://localhost:3306/test");
+       mutablePropertyValues.addPropertyValue("username", "root");
+       mutablePropertyValues.addPropertyValue("password", "123456");
+
+测试代码：
+
+以直接注入我们的对象，对于同样接口的我们需要指定name：
+
+package com.kfit.config;
+ 
+import org.kfit.service.HelloService;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import com.kfit.demo.Shanhy;
+@Configuration
+publicclass MyConfig {
+    /**
+     *  这里只是测试使用，没有实际的意义.
+     */
+    @Bean(name="testHelloService")
+    public HelloService filterRegistrationBean(@Qualifier("shanhyB") Shanhy shanhy){
+       HelloService helloService = new HelloService();
+        shanhy.display();
+        // 其它处理代码.
+        returnhelloService;
+    }
+}
+ 
+
+使用@Resource 或者 @Autowired并指定@Qualifier 也可以：
+
+package com.kfit.controller;
+ 
+import javax.annotation.Resource;
+ 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+ 
+import com.kfit.demo.Shanhy;
+ 
+/**
+ *
+ * @author Angel(QQ:412887952)
+ * @version v.0.1
+ */
+@RestController
+publicclass HelloController {
+ 
+    @Resource(name = "shanhyA")
+    private Shanhy shanhyA;
+ 
+    @Autowired
+    @Qualifier("shanhyB")
+    private Shanhy shanhyB;
+ 
+    @RequestMapping("/test")
+    public String test(){
+       shanhyA.display();
+       shanhyB.display();
+       return"test";
+    }
+}
+访问：http://127.0.0.1:8080/test 查看控制台的打印信息。

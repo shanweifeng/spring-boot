@@ -244,11 +244,43 @@ d、配置application.properties;
 e、编写缓存配置类以及ehcache.xml配置文件：
 
 
+三十八、分布式session保存到redis
+	在使用spring boot做负载均衡的时候，多个app之间的session要保持一致，这样负载到不同的app时候，在一个app登录之后，而访问到另外一台服务器的时候，session丢失。
+       常规的解决方案都是使用：如apache使用mod_jk.conf，使用Memcached进行共享。
+       在开发spring boot app的时候可以借助 spring session 和redis或者ehcache，用外置的redis或者ehcache来存储session的状态,这里使用redis进行介绍，ehcache实现是一样的。
+当前解决分布式信息不能共享（可以使用缓存、redis、zookeeper等第三方插件保存信息，所有这些信息都从第三方获取。只要第三方做好了安全校验即可）
 
+增加相关依赖
+<dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-redis</artifactId>
+    </dependency>
+  <dependency>
+      <groupId>org.springframework.session</groupId>
+      <artifactId>spring-session-data-redis</artifactId>
+</dependency>
+在可扫描的位置添加
+@Configuration
+@EnableRedisHttpSession(maxInactiveIntervalInSeconds = 60) //1分钟失效
+public class RedisSessionConfig {
+}在配置文件中添加属性spring.redis.host=127.0.0.1需要保存的实体均时间Serializable接口
+这样在重新登录系统的时候可以发现所有的session均是相同的了
+如果需要不同的远端同时登录，则需要根据端类型区分是否生成多个session以及同一个用户不同端生成session的差异
+注意redis的版本需要相对较高，否则会提示存储异常
 
+发散思维：
+一些变化频繁数据量不大的数据可以存放到redis中，一些变化较少的如果服务器内存足够的情况下可以放到内存中也可以放到redis中.
 
+三十九、spring boot shiro权限管理
+	1、先创建一个可访问页面的工程
+	2、在工程中添加
+		(a) pom.xml中添加Shiro依赖；
+		(b) 注入Shiro Factory和SecurityManager。
+		(c) 身份认证
+		(d) 权限控制
+	在Spring中注入类都是使用配置文件的方式，在Spring Boot中是使用注解的方式，那么应该如何进行实现呢？
+    Shiro几个核心的类，第一就是ShiroFilterFactory,第二就是SecurityManager，那么最简单的配置就是注入这两个类就ok了
 
-
-
+ApplicationListener 通过java方式将类注入到spring中 
 
         

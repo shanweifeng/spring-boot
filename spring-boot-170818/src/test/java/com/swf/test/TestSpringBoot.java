@@ -13,6 +13,9 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import com.swf.Application;
 import com.swf.entity.Demo;
 import com.swf.service.DemoService;
+import com.swf.service.UserInfoServiceImpl;
+
+import net.minidev.json.JSONObject;
 
 ////SpringJUnit支持，由此引入Spring-Test框架支持！
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -25,6 +28,9 @@ public class TestSpringBoot {
 	@Resource
     private DemoService demoService;
    
+	@Resource
+    private UserInfoServiceImpl userInfoServiceImpl;
+	
 	@Test
     public void testGetName(){
        /*Assert.assertEquals("hello",demoService.getById(2));*/
@@ -35,4 +41,9 @@ public class TestSpringBoot {
 		
 		System.out.println("demoService.getById(8)"+demoService.getById(8));
     }
+	
+	@Test
+	public void test() {
+		System.out.println("获取信息:"+com.alibaba.fastjson.JSONObject.toJSONString(userInfoServiceImpl.findByUsername("admin")));
+	}
 }

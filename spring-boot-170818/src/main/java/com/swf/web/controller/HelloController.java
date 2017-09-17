@@ -1,8 +1,12 @@
 package com.swf.web.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.Resource;
 import javax.sql.DataSource;
 
+import org.assertj.core.util.Lists;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,6 +31,7 @@ public class HelloController {
 	
 	@Resource
 	private WiselySettings wiselySettings;
+	
 	
 	@RequestMapping("/getwiselySettings")
 	public String getwiselySettings() {
@@ -57,7 +62,9 @@ public class HelloController {
 		d.setId(100);
 		d.setName("swf");
 		d.setInfo("这个是测试fastJson中的@JSONField是否起作用，有用则不会返回");
-        return d;
+		List<Demo> dl = new ArrayList<>();//Lists.newArrayList(d);
+		dl.add(d);
+        return dl;
     }
 	@RequestMapping("/exception")
 	public Object exceptionTest()

@@ -39,9 +39,10 @@
        diskPersistent="false"  
        timeToIdleSeconds="0"  
        timeToLiveSeconds="600"  
-       memoryStoreEvictionPolicy="LRU" />  
+       memoryStoreEvictionPolicy="LRU" 
+       diskExpiryThreadIntervalSeconds="120" />  
    
-    <cache  
+    <!-- <cache  
        name="demo"    
        eternal="false"  
        maxElementsInMemory="100"  
@@ -49,6 +50,16 @@
        diskPersistent="false"  
        timeToIdleSeconds="0"  
        timeToLiveSeconds="300"  
-       memoryStoreEvictionPolicy="LRU" />  
+       memoryStoreEvictionPolicy="LRU" />  --> 
+           
+    <!-- 登录记录缓存锁定10分钟 -->
+    <cache name="passwordRetryCache"
+           maxEntriesLocalHeap="2000"
+           eternal="false"
+           timeToIdleSeconds="3600"
+           timeToLiveSeconds="0"
+           overflowToDisk="false"
+           statistics="true">
+    </cache>
         
 </ehcache> 

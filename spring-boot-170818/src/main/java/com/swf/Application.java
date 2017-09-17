@@ -50,11 +50,14 @@ public class Application {//如果将当前类移动位置可能存在类不能�
 		//application.setBannerMode(Banner.Mode.OFF);//关闭spring boot图标
 		//application.setBannerMode(Banner.Mode.LOG);
 		application.setBanner(new MyBanner());
+		
+		//SpringApplication.setRegisterShutdownHook(false)//当前设置会使热部署不生效
+		
         application.run(new String[]{"hello,","单伟峰"});
 	}
 	
 	@Bean 
-    public MultipartConfigElement multipartConfigElement() { 
+    public MultipartConfigElement multipartConfigElement() {
         MultipartConfigFactory factory = new MultipartConfigFactory();
         //// 设置文件大小限制 ,超了，页面会抛出异常信息，这时候就需要进行异常信息的处理了;
         factory.setMaxFileSize("128KB"); //KB,MB  上传的单个文件大小

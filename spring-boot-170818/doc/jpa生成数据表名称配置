@@ -1,0 +1,15 @@
+这个问题主要是JPA的命名策略不一致导致的。
+
+我们有这么一个配置：
+
+spring.jpa.hibernate.naming-strategy = org.hibernate.cfg.DefaultNamingStrategy
+
+这里的值有两个可选的配置：
+
+第一：org.hibernate.cfg.ImprovedNamingStrategy
+第二：org.hibernate.cfg.DefaultNamingStrategy
+以上两个的区别是：
+
+DefaultNamingStrategy这个直接映射，不会做过多的处理（前提没有设置@Table，@Column等属性的时候）。
+
+ImprovedNamingStrategy  表名，字段为小写，当有大写字母的时候会转换为分隔符号“_”。
