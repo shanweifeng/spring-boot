@@ -43,7 +43,7 @@ public class DruidConfiguration {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DruidConfiguration.class);  
 	//下面这些属性如果没有注入的话 页面查询会没有数据的
-	@Value("${spring.datasource.driver-class-name}")  
+	/*@Value("${spring.datasource.driver-class-name}")  
     private String driverClassName;  
     @Value("${spring.datasource.url}")  
     private String url;  
@@ -89,9 +89,9 @@ public class DruidConfiguration {
     public DataSource dataSource() {//可以将driverClassName属性配置到方法参数中如@Value("${spring.datasource.url}") String url
         DruidDataSource datasource = new DruidDataSource();  
   
-        datasource.setDriverClassName(driverClassName);  
-        datasource.setUrl(url);  
-        datasource.setUsername(username);  
+        datasource.setDriverClassName(driverClassName);
+        datasource.setUrl(url);
+        datasource.setUsername(username);
         datasource.setPassword(password);  
         //其它配置  
         datasource.setInitialSize(initialSize);  
@@ -112,7 +112,7 @@ public class DruidConfiguration {
             LOGGER.error("druid configuration initialization filter", e);  
         }  
         return datasource;  
-    } 
+    } */
 	
 	/**
      * 注册一个StatViewServlet  这样的方式不需要添加注解：@ServletComponentScan

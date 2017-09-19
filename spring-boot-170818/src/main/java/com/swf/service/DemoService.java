@@ -13,6 +13,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
 import com.swf.entity.Demo;
+import com.swf.entity.User;
+import com.swf.monitor.multi.datasource.TargetDataSource;
 import com.swf.dao.DemoRepository;
 
 @Service("demoService")
@@ -62,6 +64,21 @@ public class DemoService {
 	    String sql = "select *from test where id=?";
 	    RowMapper<Demo> rowMapper = new BeanPropertyRowMapper<Demo>(Demo.class);
 	    return jdbcTemplate.queryForObject(sql, rowMapper,id);
+	}
+	
+	public Demo getById1(long id){
+		System.err.println("DemoInfoServiceImpl.getById1()=========从数据库中进行获取的....id="+id);
+		String sql = "select *from test where id=?";
+		RowMapper<Demo> rowMapper = new BeanPropertyRowMapper<Demo>(Demo.class);
+		return jdbcTemplate.queryForObject(sql, rowMapper,id);
+	}
+	
+	@TargetDataSource("ds1")
+	public User getByIdD(long id){
+		System.err.println("DemoInfoServiceImpl.getByIdD()=========从数据库中进行获取的....id="+id);
+		String sql = "select * from user where id=?";
+		RowMapper<User> rowMapper = new BeanPropertyRowMapper<User>(User.class);
+		return jdbcTemplate.queryForObject(sql, rowMapper,id);
 	}
 	
 	@Resource

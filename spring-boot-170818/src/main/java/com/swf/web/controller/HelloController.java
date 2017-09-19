@@ -7,6 +7,9 @@ import javax.annotation.Resource;
 import javax.sql.DataSource;
 
 import org.assertj.core.util.Lists;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,6 +35,26 @@ public class HelloController {
 	@Resource
 	private WiselySettings wiselySettings;
 	
+	//没有指定为主数据源.
+    @Autowired
+    private DataSource dataSource;
+   
+    @Autowired
+    @Qualifier("ds1")
+    private DataSource dataSource1;
+    
+    @Resource
+    private JdbcTemplate jdbcTemplate;
+	
+    @RequestMapping("/datasource")
+    public void testDatasource() {
+    	/*System.out.println("dataSource"+dataSource);
+    	System.out.println("dataSource1"+dataSource1);
+    	System.out.println("jdbcTemplate"+jdbcTemplate);*/
+    	System.out.println("demoService.getById(6)"+demoService.getById(6));
+    	System.out.println("demoService.getById1(6)"+demoService.getById1(6));
+    	System.out.println("demoService.getByIdD(3):"+demoService.getByIdD(3));
+    }
 	
 	@RequestMapping("/getwiselySettings")
 	public String getwiselySettings() {
@@ -104,7 +127,7 @@ public class HelloController {
     	return "删除成功";
     }
     
-    @Resource
+    /*@Resource
     private DataSource dataSource;
     @RequestMapping("/getBeans")
     public Object getBeans() {
@@ -112,7 +135,7 @@ public class HelloController {
     	//System.out.println(t.get);
     	System.out.println("dataSource:"+dataSource);
     	return "getBeans";
-    }
+    }*/
     
     @RequestMapping("/getPropertiesForValue")
     public String getPropertiesForValue() {

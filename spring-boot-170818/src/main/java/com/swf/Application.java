@@ -17,6 +17,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
+import com.swf.monitor.multi.datasource.DynamicDataSourceRegister;
 import com.swf.study.EnvironmentAndProperties.WiselySettings;
 import com.swf.study.banner.MyBanner;
 
@@ -35,6 +36,7 @@ import com.swf.study.banner.MyBanner;
 //@Configuration
 @ImportResource(locations={"classpath:application-bean.xml"})//引入xml文件 如果不引入的话  xml文件中定义的东西均不能被springboot扫描到 xml文件的引入 也可以在其他标注@Configuration类中引入
 //@ImportResource(locations={"file:d:/test/application-bean1.xml"})  ImportResource有两种引入路径 classPath  file  任意一种均可以使用
+@Import(DynamicDataSourceRegister.class)//多数据源动态注册需要？  这里还需要改进  需要自动适应多数据源
 public class Application {//如果将当前类移动位置可能存在类不能自动注入到spring容器汇总，这里需要自 定义springboot自动扫描路径以确保能扫描到所有需要注册的类
 	/**
 	 * 其中@SpringBootApplication申明让spring boot自动给程序进行必要的配置，等价于以默认属性使用@Configuration，@EnableAutoConfiguration和@ComponentScan

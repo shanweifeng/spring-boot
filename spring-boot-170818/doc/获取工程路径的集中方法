@@ -1,0 +1,45 @@
+1、通过xml文件配置在页面上获取工程路径的方法（${springMacroRequestContext.contextPath}据说是spring内置的）
+	在spring的xml配置文件中配置<mvc:interceptors><bean class="com.dynastqin.springboot.cfg.PageContextInterceptor" /></mvc:interceptors>
+	
+	使用freemarkeer时的配置
+	<bean id="viewResolver"  
+         class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+            <property name="viewClass" value="org.springframework.web.servlet.view.freemarker.FreeMarkerView"/>  
+         <property name="contentType" value="text/html;charset=utf-8"/>
+         <property name="cache" value="true"/>
+         <property name="suffix" value=".ftl"/>  
+         <property name="order" value="0"/>  
+         <property name="requestContextAttribute" value="request"/>
+       </bean> 
+ 2、在springboot中获取
+ 	a@Bean
+    public FreeMarkerViewResolver freeMarkerViewResolver() {
+        System.out.println("MvcConfig.freeMarkerViewResolver()");
+        FreeMarkerViewResolver resolver = new FreeMarkerViewResolver();
+        resolver.setPrefix("");
+        resolver.setSuffix(".ftl");
+        resolver.setContentType("text/html; charset=UTF-8");
+        resolver.setRequestContextAttribute("request");
+        return resolver;
+    }
+    
+    b1、在application.properties添加如下信息：
+	spring.freemarker.request-context-attribute=request
+	2、在x.ftl文件中进行使用：
+	${request.contextPath}
+	
+	
+	c{
+            request.setAttribute("rc.contextPath", "http://"+request.getRemoteHost()+":"+request.getLocalPort()+"/spring-boot-fm");
+        }
+        else
+        {
+            request.setAttribute("rc.contextPath", "http://"+request.getRemoteHost()+":"+request.getLocalPort()+"");
+        }
+        
+        jsp获取
+        <%
+String path = request.getContextPath();
+String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+%>
+ 
