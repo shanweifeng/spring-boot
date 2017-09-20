@@ -7,6 +7,8 @@ import javax.annotation.Resource;
 import javax.sql.DataSource;
 
 import org.assertj.core.util.Lists;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.alibaba.fastjson.JSON;
 import com.swf.entity.Demo;
 import com.swf.service.DemoService;
 import com.swf.study.EnvironmentAndProperties.PropertiesForAnnotation;
@@ -23,6 +26,8 @@ import com.swf.study.EnvironmentAndProperties.WiselySettings;
 @RestController// 标记为：restful
 public class HelloController {
 
+	
+	private Logger logger = LoggerFactory.getLogger(HelloController.class);
 	@Resource
 	private DemoService demoService;
 	
@@ -55,6 +60,17 @@ public class HelloController {
     	System.out.println("demoService.getById1(6)"+demoService.getById1(6));
     	System.out.println("demoService.getByIdD(3):"+demoService.getByIdD(3));
     }
+    
+    @RequestMapping("/mybaties")
+    public void testMybatis() {
+    	System.out.println(demoService.getMybatiesById(3));
+    }
+    
+    @RequestMapping("/load")
+    public void load() {
+    	System.out.println(JSON.toJSONString(demoService.likeName("系统管理员")));
+    	System.out.println(JSON.toJSONString(demoService.load()));
+    }
 	
 	@RequestMapping("/getwiselySettings")
 	public String getwiselySettings() {
@@ -84,7 +100,7 @@ public class HelloController {
 		Demo d = new Demo();
 		d.setId(100);
 		d.setName("swf");
-		d.setInfo("这个是测试fastJson中的@JSONField是否起作用，有用则不会返回");
+		//d.setInfo("这个是测试fastJson中的@JSONField是否起作用，有用则不会返回");
 		List<Demo> dl = new ArrayList<>();//Lists.newArrayList(d);
 		dl.add(d);
         return dl;
@@ -110,14 +126,15 @@ public class HelloController {
     @RequestMapping("/saveByJDBCTemplate")
     public String saveByJDBCTemplate(){
        Demo d = new Demo();
-       d.setName("Angel");
-       d.setInfo("swf");
+       d.setName("水电费水电费水电费12");
+       //d.setInfo("单伟峰是多少山东省地方");
        demoService.saveByJDBCTemplate(d);//保存数据.
        return"ok.Demo2Controller.saveByJDBCTemplate";
     }
     
     @RequestMapping("/getById/{id}")
     public Object getById(@PathVariable("id") int id){
+    	logger.info("HelloController.getById(@PathVariable(\"id\") int id)-》"+id);
        return demoService.getById(id);//保存数据.
     }
     

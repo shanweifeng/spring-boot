@@ -25,6 +25,14 @@ public class User implements Serializable {
 	private String email;
 	private String sms_code;
 	private Short department_id;
+	
+	@Override  
+    public String toString() {  
+       return "User [id=" + id + ", username=" + username + ", realname=" + realname + ", password=" + password  
+              + ", locked=" + locked + ", create_time=" + create_time+", mobile_number=" + mobile_number + 
+              ", email=" + email +", sms_code=" + sms_code +", department_id=" + department_id +"]";  
+    }  
+
 	public Integer getId() {
 		return id;
 	}

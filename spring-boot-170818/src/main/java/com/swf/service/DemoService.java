@@ -1,8 +1,13 @@
 package com.swf.service;
 
+import java.io.UnsupportedEncodingException;
+import java.util.List;
+
 import javax.annotation.Resource;
 import javax.transaction.Transactional;
 
+import org.apache.ibatis.annotations.Select;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -15,7 +20,10 @@ import org.springframework.stereotype.Service;
 import com.swf.entity.Demo;
 import com.swf.entity.User;
 import com.swf.monitor.multi.datasource.TargetDataSource;
+import com.alibaba.fastjson.JSON;
+import com.github.pagehelper.PageHelper;
 import com.swf.dao.DemoRepository;
+import com.swf.dao.mapper.UserMapper;
 
 @Service("demoService")
 public class DemoService {
@@ -48,10 +56,10 @@ public class DemoService {
        demoRepository.save(demo);
     }
 	
-	@Transactional
+	@TargetDataSource("ds3")
 	public void saveByJDBCTemplate(Demo demo) {
-		String sql = "insert into test(name,info) values(?,?)";
-		jdbcTemplate.update(sql, new Object[]{demo.getName(),demo.getInfo()});
+		String sql = "insert into test(`name`) values(?)";
+		jdbcTemplate.update(sql, new Object[]{demo.getName()});
 	}
 	
 	//@Transactional(readOnly=true)
@@ -94,5 +102,25 @@ public class DemoService {
     @CacheEvict(value="demoInfo")//删除所有缓存
     public void deleteFromCache(long id) {
        System.out.println("DemoInfoServiceImpl.delete().从缓存中删除.");
+    }
+    
+    @Autowired
+    private UserMapper userMappper;
+   
+    @TargetDataSource("ds1")
+    public User getMybatiesById(Integer name){
+        return userMappper.getById(name);
+    }
+    
+    @TargetDataSource("ds1")
+    public List<User> likeName(String name){
+    	System.out.println("name="+name);
+        return userMappper.likeName(name);
+    }
+    
+    @TargetDataSource("ds1")
+    public List<Object> load(){
+    	//PageHelper.startPage(1,1);
+    	return userMappper.getLog("敖琪111");
     }
 }

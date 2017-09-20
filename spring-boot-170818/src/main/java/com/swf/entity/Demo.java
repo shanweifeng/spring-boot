@@ -26,6 +26,6 @@ public class Demo implements Serializable{
 	@GeneratedValue
 	private long id; //id
     private String name; //name
-    @JSONField(serialize=false)
+    //@JSONField(serialize=false)
     private String info;
 }
